@@ -8,10 +8,11 @@ const routesURI = {
 
 router
     .get(routesURI.tourParam, TourController.getSingleTour)
-    .delete(routesURI.tourParam, TourController.deleteTour);
+    .delete(routesURI.tourParam, TourController.deleteTour)
+    .put(routesURI.tourParam, TourController.updateTour);
 
 router
     .get(routesURI.tour, TourController.getAllTours)
-    .post(routesURI.tour, TourController.checkBody, TourController.addTour);
+    .post(routesURI.tour, TourController.addTour);
 
 module.exports = router;
