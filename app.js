@@ -33,8 +33,12 @@ app.use((req, res, next) => {
 });
 
 // ROUTES
-app.use('/api/v1', require('./routes/TourRoutes'));
-app.use('/api/v1', require('./routes/UserRoutes'));
+const URI = {
+    baseAPI: '/api/v1'
+};
+
+app.use(URI.baseAPI, require('./routes/TourRoutes'));
+app.use(URI.baseAPI, require('./routes/UserRoutes'));
 
 // DB CONNECTION
 mongoose

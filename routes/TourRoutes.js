@@ -7,12 +7,14 @@ const routesURI = {
 };
 
 router
-    .get(routesURI.tourParam, TourController.getSingleTour)
-    .delete(routesURI.tourParam, TourController.deleteTour)
-    .put(routesURI.tourParam, TourController.updateTour);
+    .route(routesURI.tourParam)
+    .get(TourController.getSingleTour)
+    .delete(TourController.deleteTour)
+    .put(TourController.updateTour);
 
 router
-    .get(routesURI.tour, TourController.getAllTours)
-    .post(routesURI.tour, TourController.addTour);
+    .route(routesURI.tour)
+    .get(TourController.getAllTours)
+    .post(TourController.addTour);
 
 module.exports = router;
