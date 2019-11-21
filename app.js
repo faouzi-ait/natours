@@ -9,6 +9,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 const config = require('./configuration/config');
+const AppError = require('./utils/appError');
+const globalErrorHandler = require('./controllers/ErrorController');
 
 // SET IN .ENV FILE
 if (process.env.NODE_ENV === 'development') {
@@ -34,11 +36,18 @@ app.use((req, res, next) => {
 
 // ROUTES
 const URI = {
-    baseAPI: '/api/v1'
+    baseAPI: '/api/v1',
+    notFound: '*'
 };
 
 app.use(URI.baseAPI, require('./routes/TourRoutes'));
 app.use(URI.baseAPI, require('./routes/UserRoutes'));
+
+app.all('*', (req, res, next) => {
+    next(new AppError(`The route ${req.originalUrl} was not found`, 404));
+});
+
+app.use(globalErrorHandler);
 
 // DB CONNECTION
 mongoose
