@@ -3,19 +3,23 @@ const UserController = require('../controllers/UserController');
 const AuthController = require('../controllers/AuthController');
 
 const routesURI = {
-    userParam: '/users/:id',
     user: '/users',
-    signup: '/users/signup'
+    userParam: '/users/:id',
+    signup: '/users/signup',
+    login: '/users/login'
 };
 
 router.post(routesURI.signup, AuthController.signup);
+router.post(routesURI.login, AuthController.login);
 
 router
-    .get(routesURI.userParam, UserController.getSingleUser)
-    .delete(routesURI.userParam, UserController.deleteUser);
+    .route(routesURI.userParam)
+    .get(UserController.getSingleUser)
+    .delete(UserController.deleteUser);
 
 router
-    .get(routesURI.user, UserController.getAllUsers)
-    .post(routesURI.user, UserController.addUser);
+    .route(routesURI.user)
+    .get(UserController.getAllUsers)
+    .post(UserController.addUser);
 
 module.exports = router;

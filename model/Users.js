@@ -6,13 +6,19 @@ const userSchema = mongoose.Schema(
     {
         name: {
             type: String,
-            required: [true, 'A name must have a name'],
+            required: [true, 'Your name must have a name'],
             minlength: [2, 'The name must be at least 10 chatacters long'],
             maxlength: [40, 'The name must not exceed 40 characters']
         },
+        surname: {
+            type: String,
+            required: [true, 'Your surname must have a surname'],
+            minlength: [2, 'The surname must be at least 10 chatacters long'],
+            maxlength: [40, 'The surname must not exceed 40 characters']
+        },
         email: {
             type: String,
-            required: [true, 'An email must be specified'],
+            required: [true, 'Your email must be specified'],
             minlength: [10, 'The email must be at least 10 chatacters long'],
             unique: true,
             lowercase: true,
@@ -24,11 +30,11 @@ const userSchema = mongoose.Schema(
         password: {
             type: String,
             minlength: 8,
-            required: [true, 'An email must be specified']
+            required: [true, 'Please specify your password'],
+            select: false
         },
         confirmPassword: {
             type: String,
-            required: [true, 'The confrmation email must be specified'],
             validate: {
                 // WILL WORK ON SAVE() & CREATE()
                 validator: function(el) {
@@ -52,5 +58,12 @@ userSchema.pre('save', async function(next) {
     this.confirmPassword = undefined;
     next();
 });
+
+userSchema.methods.verifyPassword = async function(
+    currentPassword,
+    userPassword
+) {
+    return await bcrypt.compare(currentPassword, userPassword);
+};
 
 module.exports = mongoose.model('User', userSchema);

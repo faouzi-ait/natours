@@ -1,4 +1,13 @@
 // const User = require('../model/Users');
+exports.addUser = (req, res, next) => {
+    return res.status(201).json({
+        status: 'success',
+        requestTimeStamp: `${req.requestedDate} - ${req.requestedTime}`,
+        data: {
+            message: 'User Created'
+        }
+    });
+};
 
 exports.getAllUsers = (req, res, next) => {
     return res.status(200).json({
