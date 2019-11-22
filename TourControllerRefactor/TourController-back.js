@@ -1,6 +1,6 @@
 //const axios = require('axios');
 const Tour = require('../model/Tours');
-const APIFeatures = require('../utils/APIFeatures');
+const APIFeatures = require('./APIFeatures');
 
 exports.aliasTopTours = async (req, res, next) => {
     req.query.limit = '5';

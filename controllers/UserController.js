@@ -23,16 +23,6 @@ exports.getSingleUser = (req, res, next) => {
     });
 };
 
-exports.addUser = (req, res, next) => {
-    return res.status(201).json({
-        status: 'success',
-        requestTimeStamp: `${req.requestedDate} - ${req.requestedTime}`,
-        data: {
-            message: 'User Created'
-        }
-    });
-};
-
 exports.deleteUser = (req, res, next) => {
     const { id } = req.params;
 

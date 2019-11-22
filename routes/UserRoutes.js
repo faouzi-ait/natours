@@ -1,10 +1,14 @@
 const router = require('express').Router();
 const UserController = require('../controllers/UserController');
+const AuthController = require('../controllers/AuthController');
 
 const routesURI = {
     userParam: '/users/:id',
-    user: '/users'
+    user: '/users',
+    signup: '/users/signup'
 };
+
+router.post(routesURI.signup, AuthController.signup);
 
 router
     .get(routesURI.userParam, UserController.getSingleUser)

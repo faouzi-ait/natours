@@ -7,10 +7,10 @@ const devError = (err, res) => {
             error: err
         });
     } else {
-        console.err('ERROR', err);
-        res.Status(500).json({
+        res.status(500).json({
             status: 'error',
-            message: 'Something went wrong'
+            message: 'Something went wrong',
+            err
         });
     }
 };
