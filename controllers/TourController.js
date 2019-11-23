@@ -3,6 +3,13 @@ const Tour = require('../model/Tours');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+exports.aliasTopTours = (req, res, next) => {
+    req.query.limit = '5';
+    req.query.sort = '-ratingsAverage,price';
+    req.query.fields = 'name, price, ratingsAverage, summary, difficulty';
+    next();
+};
+
 exports.getAllTours = catchAsync(async (req, res, next) => {
     // 1 FILTERING
     const query = { ...req.query };
@@ -14,7 +21,6 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     let queryStr = JSON.stringify(query);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
 
-    console.log(JSON.parse(queryStr));
     let q = Tour.find(JSON.parse(queryStr));
 
     // 3 SORTING

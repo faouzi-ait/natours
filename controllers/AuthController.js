@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../model/Users');
 const config = require('../configuration/config');
@@ -15,6 +16,8 @@ const generateToken = newUser => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+    // const isExist = await User.find({ email: req.body.email });
+
     const newUser = await User.create(req.body);
 
     const token = generateToken(newUser);
@@ -33,7 +36,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
     // 1 - CHECK IS EMAIL & PASSWORD EXIST
     if (!email || !password) {
-        return next(new AppError('Please provide your login details'), 400);
+        return next(new AppError('User not found', 401));
     }
 
     // 2 - CHECK IS USER EXIST & PASSWORD IS CORRECT
@@ -41,7 +44,9 @@ exports.login = catchAsync(async (req, res, next) => {
     const checkUser = await user.verifyPassword(password, user.password);
 
     if (!checkUser || !user) {
-        return next(new AppError('Incorrect login details'), 401);
+        return next(
+            new AppError('The user linked to this token does not exist', 401)
+        );
     }
 
     // 3 - IF EVERYTHING IS OK, DELIVER TOKEN AND PROCESS LOGIN
@@ -52,3 +57,59 @@ exports.login = catchAsync(async (req, res, next) => {
         token
     });
 });
+
+exports.protectedRoutes = catchAsync(async (req, res, next) => {
+    let token = '';
+
+    // 1 - GET THE TOKEN AND CHECK IT EXIST
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer ')
+    ) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!req.headers.authorization) {
+        // THROW AN ERROR
+        return next(new AppError('You are not currently logged in', 401));
+    }
+
+    // 2 - CHECK IF THE TOKEN IS VALID
+    const payload = await promisify(jwt.verify)(
+        token,
+        config.params.JWT_SECRET
+    );
+
+    // 3 - IF OK, CHECK THE USER STILL EXISTS
+    const currentUser = await User.findById(payload.id);
+    if (!currentUser) {
+        return next(
+            new AppError('The user linked to this token does not exist', 401)
+        );
+    }
+
+    // 4 - CHECK IF USER CHANGED PASSWORD AFTER TOKEN WAS ISSUED
+    if (currentUser.changedPasswordPostLogin(payload.iat)) {
+        return next(
+            new AppError('The password has been changed recently', 401)
+        );
+    }
+
+    // ALOW THE USER TO ACCESS THE PROTECTED ROUTE
+    req.user = currentUser;
+    next();
+});
+
+exports.restrictTo = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.roles)) {
+            return next(
+                new AppError(
+                    'You do not have permission to access this resource',
+                    403
+                )
+            );
+        }
+        next();
+    };
+};

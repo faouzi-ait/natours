@@ -27,6 +27,11 @@ const userSchema = mongoose.Schema(
         photo: {
             url: String
         },
+        roles: {
+            type: String,
+            enum: ['user', 'guide', 'lead', 'admin'],
+            default: 'user'
+        },
         password: {
             type: String,
             minlength: 8,
@@ -42,7 +47,8 @@ const userSchema = mongoose.Schema(
                 },
                 message: 'Passwords must be the same'
             }
-        }
+        },
+        passwordChangedTime: Date
     },
     {
         timestamps: true
@@ -64,6 +70,15 @@ userSchema.methods.verifyPassword = async function(
     userPassword
 ) {
     return await bcrypt.compare(currentPassword, userPassword);
+};
+
+userSchema.methods.changedPasswordPostLogin = function(timestamp) {
+    if (this.passwordChangedTime) {
+        const changedTimeStamp =
+            (this.passwordChangedTime.getTime() / 1000) * 1;
+        return timestamp < changedTimeStamp;
+    }
+    return false;
 };
 
 module.exports = mongoose.model('User', userSchema);

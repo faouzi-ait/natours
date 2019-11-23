@@ -31,6 +31,7 @@ app.use((req, res, next) => {
 
     req.requestedDate = time.split('T')[0];
     req.requestedTime = time.split('T')[1].split('.')[0];
+
     next();
 });
 
