@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = mongoose.Schema(
     {
@@ -48,12 +49,22 @@ const userSchema = mongoose.Schema(
                 message: 'Passwords must be the same'
             }
         },
-        passwordChangedTime: Date
+        passwordChangedTime: Date,
+        passwordResetToken: String,
+        passwordResetExpires: Date
     },
     {
         timestamps: true
     }
 );
+
+// UPDATE THE PASSWORD CHANGED TIME UPON PASSWORD CHANGE
+userSchema.pre('save', function(next) {
+    if (!this.isModified('password') || this.isNew) return next();
+
+    this.passwordChangedTime = Date.now() - 1000;
+    next();
+});
 
 // SAVES THE PASSWORD HASHED ONCE BOTH PASSWORDS INPUT MATCH
 userSchema.pre('save', async function(next) {
@@ -78,7 +89,24 @@ userSchema.methods.changedPasswordPostLogin = function(timestamp) {
             (this.passwordChangedTime.getTime() / 1000) * 1;
         return timestamp < changedTimeStamp;
     }
+
+    // PASSWORD NOT CHANGED
     return false;
+};
+
+userSchema.methods.createPasswordResetToken = function() {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    this.passwordResetToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    // console.log({ resetToken }, this.passwordResetToken);
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 };
 
 module.exports = mongoose.model('User', userSchema);
