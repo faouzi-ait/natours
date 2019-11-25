@@ -8,7 +8,8 @@ const routesURI = {
     signup: '/users/signup',
     login: '/users/login',
     forgotPassword: '/users/forgotPassword',
-    resetPassword: '/users/resetPassword/:token'
+    resetPassword: '/users/resetPassword/:token',
+    updatePassword: '/users/updatePassword'
 };
 
 router.post(routesURI.signup, AuthController.signup);
@@ -16,6 +17,12 @@ router.post(routesURI.login, AuthController.login);
 
 router.post(routesURI.forgotPassword, AuthController.forgotPassword);
 router.patch(routesURI.resetPassword, AuthController.resetPassword);
+
+router.patch(
+    routesURI.updatePassword,
+    AuthController.protectedRoutes,
+    AuthController.updatePassword
+);
 
 router
     .route(routesURI.userParam)

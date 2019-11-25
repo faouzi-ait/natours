@@ -9,7 +9,7 @@ const sendMail = require('../utils/email');
 
 const generateToken = user => {
     return jwt.sign(
-        { id: user._id, email: user.email },
+        { id: user._id, email: user.email, roles: user.roles },
         config.params.JWT_SECRET,
         {
             expiresIn: config.params.JWT_EXPIRE
@@ -189,6 +189,29 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     const token = generateToken(user);
 
     res.status(201).json({
+        status: 'success',
+        token
+    });
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+    // 1) GET THE USER FROM THE COLLECTION
+    const { currentPassword, password, confirmPassword } = req.body;
+    const user = await User.findById(req.user.id).select('+password');
+
+    // 2) CHECK IF THE POSTED PASSWORD IS CORRECT
+    if (!(await user.verifyPassword(currentPassword, user.password))) {
+        return next(new AppError('Your password is not correct', 401));
+    }
+    // 3) IF CORRECT, UPDATE THE PASSWORD
+    user.password = password;
+    user.confirmPassword = confirmPassword;
+    await user.save();
+
+    // 4) LOG IN THE USER AND SEND THE JWT
+    const token = generateToken(user);
+
+    res.status(200).json({
         status: 'success',
         token
     });
