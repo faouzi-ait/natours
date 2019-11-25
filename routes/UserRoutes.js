@@ -7,6 +7,7 @@ const routesURI = {
     userParam: '/users/:id',
     signup: '/users/signup',
     login: '/users/login',
+    updateUser: '/users/updateUser',
     forgotPassword: '/users/forgotPassword',
     resetPassword: '/users/resetPassword/:token',
     updatePassword: '/users/updatePassword'
@@ -22,6 +23,12 @@ router.patch(
     routesURI.updatePassword,
     AuthController.protectedRoutes,
     AuthController.updatePassword
+);
+
+router.patch(
+    routesURI.updateUser,
+    AuthController.protectedRoutes,
+    UserController.updateUser
 );
 
 router
