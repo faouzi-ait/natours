@@ -17,9 +17,22 @@ const generateToken = user => {
     );
 };
 
+const createCookie = (res, token) => {
+    const options = {
+        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        httpOnly: true
+    };
+
+    if (process.env.NODE_ENV === 'production') options.secure = true;
+
+    return res.cookie('jwt', token, options);
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create(req.body);
     const token = generateToken(newUser);
+
+    createCookie(res, token);
 
     res.status(201).json({
         status: 'success',

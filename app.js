@@ -2,12 +2,19 @@ require('dotenv/config');
 
 // IMPORT REQUIRED MODULES
 const express = require('express');
+const morgan = require('morgan');
+
+// SECURITY MIDDLEWARES
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
+const hpp = require('hpp');
 
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const morgan = require('morgan');
 const config = require('./configuration/config');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/ErrorController');
@@ -17,9 +24,21 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
 
+const limiter = rateLimit({
+    max: 100,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many were made from this IP, please try again for an hour'
+});
+
 // USE MIDDLEWARE
+app.use(helmet());
 app.use(cors());
-app.use(bodyParser.json());
+app.use('/api', limiter);
+app.use(bodyParser.json({ limit: '10kb' }));
+
+app.use(mongoSanitize());
+app.use(xssClean());
+
 app.use(
     bodyParser.urlencoded({
         extended: true
@@ -49,6 +68,19 @@ app.all('*', (req, res, next) => {
 });
 
 app.use(globalErrorHandler);
+
+app.use(
+    hpp({
+        whitelist: [
+            'duration',
+            'ratingsAverage',
+            'ratingsQuantity',
+            'maxGroupSize',
+            'difficulty',
+            'price'
+        ]
+    })
+);
 
 // DB CONNECTION
 mongoose

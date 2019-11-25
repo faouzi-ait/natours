@@ -3,7 +3,7 @@ const UserController = require('../controllers/UserController');
 const AuthController = require('../controllers/AuthController');
 
 const routesURI = {
-    user: '/users',
+    userList: '/users',
     userParam: '/users/:id',
     signup: '/users/signup',
     login: '/users/login',
@@ -31,14 +31,9 @@ router.patch(
     UserController.updateUser
 );
 
+router.route(routesURI.userParam).delete(UserController.deleteUser);
 router
-    .route(routesURI.userParam)
-    .get(UserController.getSingleUser)
-    .delete(UserController.deleteUser);
-
-router
-    .route(routesURI.user)
-    .get(UserController.getAllUsers)
-    .post(UserController.addUser);
+    .route(routesURI.userList)
+    .get(AuthController.protectedRoutes, UserController.getAllUsers);
 
 module.exports = router;

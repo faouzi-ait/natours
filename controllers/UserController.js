@@ -13,38 +13,21 @@ const filterObj = (obj, ...allowedFields) => {
     return newObj;
 };
 
-exports.addUser = (req, res, next) => {
-    return res.status(201).json({
-        status: 'success',
-        requestTimeStamp: `${req.requestedDate} - ${req.requestedTime}`,
-        data: {
-            message: 'User Created'
-        }
-    });
-};
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+    const users = await User.find();
 
-exports.getAllUsers = (req, res, next) => {
-    return res.status(200).json({
-        status: 'success',
-        requestTimeStamp: `${req.requestedDate} at: ${req.requestedTime}`,
-        results: '',
-        data: {
-            userList: 'List Here'
-        }
-    });
-};
-
-exports.getSingleUser = (req, res, next) => {
-    const { id } = req.params;
+    if (!users) {
+        return next(new AppError('User not found', 401));
+    }
 
     return res.status(200).json({
         status: 'success',
-        requestTimeStamp: `${req.requestedDate} - ${req.requestedTime}`,
+        requestTimeStamp: `${req.requestedDate} at ${req.requestedTime}`,
         data: {
-            User: `User ID: ${id}`
+            users
         }
     });
-};
+});
 
 exports.updateUser = catchAsync(async (req, res, next) => {
     // 1) FILTERED OUT UNWANTED FIELDS NAMES
@@ -62,7 +45,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 
     return res.status(200).json({
         status: 'success',
-        requestTimeStamp: `${req.requestedDate} - ${req.requestedTime}`,
+        requestTimeStamp: `${req.requestedDate} at ${req.requestedTime}`,
         data: {
             user
         }
@@ -70,13 +53,5 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteUser = (req, res, next) => {
-    const { id } = req.params;
-
-    return res.status(203).json({
-        status: 'success',
-        requestTimeStamp: `${req.requestedDate} - ${req.requestedTime}`,
-        data: {
-            message: `User: ${id} was successfully removed`
-        }
-    });
+    // TODO: USE THE USER FROM THE REQUEST OBJECT
 };
