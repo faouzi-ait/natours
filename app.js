@@ -3,6 +3,7 @@ require('dotenv/config');
 // IMPORT REQUIRED MODULES
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 // SECURITY MIDDLEWARES
 const rateLimit = require('express-rate-limit');
@@ -31,6 +32,7 @@ const limiter = rateLimit({
 });
 
 // USE MIDDLEWARE
+app.use(cors());
 app.use(helmet());
 app.use(cors());
 app.use('/api', limiter);
