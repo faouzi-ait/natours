@@ -15,7 +15,7 @@ const hpp = require('hpp');
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const corsOr = require('cors');
 const config = require('./configuration/config');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/ErrorController');
@@ -32,7 +32,7 @@ const limiter = rateLimit({
 });
 
 // USE MIDDLEWARE
-app.use(cors());
+app.use(corsOr());
 app.use(helmet());
 app.use(cors());
 app.use('/api', limiter);
