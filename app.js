@@ -36,7 +36,7 @@ app.use(corsOr());
 app.use(helmet());
 app.use(cors());
 app.use('/api', limiter);
-app.use(bodyParser.json({ limit: '10kb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
 
 app.use(mongoSanitize());
 app.use(xssClean());
