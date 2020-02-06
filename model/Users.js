@@ -72,6 +72,12 @@ userSchema.pre('save', function(next) {
     next();
 });
 
+// RETRIEVE ALL DOCUMENTS WHOSE ACTIVE PROPERTIES ARE SET TO TRUE
+userSchema.pre('find', function(next) {
+    this.find({ isActive: { $ne: false } });
+    next();
+});
+
 // SAVES THE PASSWORD HASHED ONCE BOTH PASSWORDS INPUT MATCH
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) return next();
