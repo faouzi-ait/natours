@@ -17,8 +17,17 @@ const routesURI = {
 router.post(routesURI.signup, AuthController.signup);
 router.post(routesURI.login, AuthController.login);
 
-router.post(routesURI.forgotPassword, AuthController.forgotPassword);
-router.patch(routesURI.resetPassword, AuthController.resetPassword);
+router.post(
+    routesURI.forgotPassword,
+    AuthController.protectedRoutes,
+    AuthController.forgotPassword
+);
+
+router.patch(
+    routesURI.resetPassword,
+    AuthController.protectedRoutes,
+    AuthController.resetPassword
+);
 
 router.patch(
     routesURI.updatePassword,
@@ -35,8 +44,8 @@ router.patch(
 router
     .route(routesURI.userParam)
     .delete(AuthController.protectedRoutes, UserController.deleteUser);
-router
-    .route(routesURI.userList)
-    .get(AuthController.protectedRoutes, UserController.getAllUsers);
+
+router.route(routesURI.userList).get(UserController.getAllUsers);
+// .get(AuthController.protectedRoutes, UserController.getAllUsers);
 
 module.exports = router;
