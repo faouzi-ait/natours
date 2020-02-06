@@ -5,7 +5,7 @@ const emailSending = async (user, subject, message) => {
     const mailOptions = {
         from: 'Admin',
         to: user,
-        subject: subject,
+        subject,
         html: message
     };
 
@@ -14,7 +14,7 @@ const emailSending = async (user, subject, message) => {
         auth: config.oauth
     });
 
-    transporter.sendMail(mailOptions, (err, resp) => {
+    await transporter.sendMail(mailOptions, (err, resp) => {
         if (err) {
             console.log(err);
         } else {

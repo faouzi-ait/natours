@@ -7,6 +7,7 @@ const routesURI = {
     userParam: '/users/:id',
     signup: '/users/signup',
     login: '/users/login',
+    delete: '/users/delete',
     updateUser: '/users/updateUser',
     forgotPassword: '/users/forgotPassword',
     resetPassword: '/users/resetPassword/:token',
@@ -31,7 +32,9 @@ router.patch(
     UserController.updateUser
 );
 
-router.route(routesURI.userParam).delete(UserController.deleteUser);
+router
+    .route(routesURI.userParam)
+    .delete(AuthController.protectedRoutes, UserController.deleteUser);
 router
     .route(routesURI.userList)
     .get(AuthController.protectedRoutes, UserController.getAllUsers);

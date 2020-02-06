@@ -51,7 +51,13 @@ const userSchema = mongoose.Schema(
         },
         passwordChangedTime: Date,
         passwordResetToken: String,
-        passwordResetExpires: Date
+        passwordResetExpires: Date,
+        // isActive FLAG TO ACTIVATE / DEACTIVATE USER
+        isActive: {
+            type: Boolean,
+            default: true,
+            select: false
+        }
     },
     {
         timestamps: true
